@@ -37,8 +37,7 @@ class NotificationWorker(applicationContext: Context, workerParams: WorkerParame
             }
         }
 
-        val notificationBuilder = NotificationUtils.buildNotification(applicationContext, "Boot Event", notificationBody)
-        NotificationUtils.showNotification(applicationContext, 1, notificationBuilder)
+        val notificationBuilder = NotificationUtils.showNotification(applicationContext, notificationBody)
         return Result.success()
     }
 }
