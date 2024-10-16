@@ -27,6 +27,7 @@ object NotificationUtils {
     private const val CHANNEL_ID = "boot_event_channel"
     private const val CHANNEL_NAME = "Boot Event Notifications"
     private const val CHANNEL_DESCRIPTION = "Notifications about boot events"
+    private const val NOTIFICATION_ID = 1
     private val Context.dataStore by preferencesDataStore(name = "settings")
     private val NOTIFICATION_ACTIVE_KEY = booleanPreferencesKey("notification_active")
 
@@ -70,7 +71,7 @@ object NotificationUtils {
         ) {
             return
         }
-        notificationManager.notify(1, builder.build())
+        notificationManager.notify(NOTIFICATION_ID, builder.build())
 
         context.dataStore.edit { settings ->
             settings[NOTIFICATION_ACTIVE_KEY] = true
