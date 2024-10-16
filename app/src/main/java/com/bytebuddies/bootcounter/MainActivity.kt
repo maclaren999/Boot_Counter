@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
 
         // Schedule the repeating task
         Scheduler.scheduleRepeatingTask(applicationContext)
-
     }
 
     fun checkNotificationPermission() {
@@ -72,6 +71,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-
 }

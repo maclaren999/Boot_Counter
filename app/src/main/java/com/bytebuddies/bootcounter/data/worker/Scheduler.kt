@@ -11,7 +11,6 @@ object Scheduler {
 
     fun scheduleRepeatingTask(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
-            .setInitialDelay(15, TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
