@@ -34,6 +34,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -46,6 +49,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+//  Add Coroutines
+    implementation(libs.coroutines)
+    implementation(libs.coroutines.core)
+
 //    Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
