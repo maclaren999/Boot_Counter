@@ -52,11 +52,13 @@ dependencies {
 //  Add Coroutines
     implementation(libs.coroutines)
     implementation(libs.coroutines.core)
-
 //    Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 //    WorkManager
     implementation(libs.worker)
+//    DataStore Preferences
+    implementation(libs.datastore.preferences)
+    implementation(libs.datastore.core)
 }

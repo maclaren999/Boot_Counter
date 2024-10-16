@@ -37,7 +37,8 @@ class NotificationWorker(applicationContext: Context, workerParams: WorkerParame
             }
         }
 
-        val notificationBuilder = NotificationUtils.showNotification(applicationContext, notificationBody)
-        return Result.success()
-    }
+        runBlocking {
+            NotificationUtils.showNotification(applicationContext, notificationBody)
+        }
+        return Result.success()    }
 }

@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bytebuddies.bootcounter.data.database.BootDatabase
 import com.bytebuddies.bootcounter.data.worker.Scheduler
+import com.bytebuddies.bootcounter.notification.NotificationUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,6 +56,11 @@ class MainActivity : AppCompatActivity() {
 
         // Schedule the repeating task
         Scheduler.scheduleRepeatingTask(applicationContext)
+
+        // Clear the notification flag
+        CoroutineScope(Dispatchers.IO).launch {
+            NotificationUtils.clearNotificationFlag(applicationContext)
+        }
     }
 
     fun checkNotificationPermission() {

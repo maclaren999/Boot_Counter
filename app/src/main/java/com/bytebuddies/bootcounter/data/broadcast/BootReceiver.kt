@@ -7,6 +7,7 @@ import androidx.room.Room
 import com.bytebuddies.bootcounter.model.BootEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import java.util.Date
@@ -16,6 +17,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import com.bytebuddies.bootcounter.data.database.BootDatabase
 import com.bytebuddies.bootcounter.data.worker.NotificationWorker
 import com.bytebuddies.bootcounter.data.worker.Scheduler
+import com.bytebuddies.bootcounter.notification.NotificationUtils
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -27,6 +29,13 @@ class BootReceiver : BroadcastReceiver() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 db.bootEventDao().insert(BootEvent(timestamp = Date().time))
+
+                // Check if the notification was active before reboot
+                val wasNotificationActive = NotificationUtils.isNotificationActive(context).first()
+                if (wasNotificationActive) {
+                    // Show the notification again
+                    NotificationUtils.showNotification(context, "Boot events detected")
+                }
             }
 
             val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
@@ -41,9 +50,6 @@ class BootReceiver : BroadcastReceiver() {
 
             // Schedule the repeating task
             Scheduler.scheduleRepeatingTask(context)
-
-            // Optional: Check if a notification was present before reboot and restore it
-            // This part can be implemented based on specific requirements
         }
     }
 }

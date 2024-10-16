@@ -10,13 +10,23 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.bytebuddies.bootcounter.R
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 object NotificationUtils {
 
     private const val CHANNEL_ID = "boot_event_channel"
     private const val CHANNEL_NAME = "Boot Event Notifications"
     private const val CHANNEL_DESCRIPTION = "Notifications about boot events"
+    private val Context.dataStore by preferencesDataStore(name = "settings")
+    private val NOTIFICATION_ACTIVE_KEY = booleanPreferencesKey("notification_active")
 
     fun createNotificationChannel(context: Context) {
         // Only create the channel on API 26+
@@ -34,12 +44,12 @@ object NotificationUtils {
         }
     }
 
-    fun showNotification(context: Context, notificationBody: String) {
+    suspend fun showNotification(context: Context, notificationBody: String) {
         // Ensure the channel is created before showing the notification
         createNotificationChannel(context)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.baseline_notifications_24) // Replace with your app's icon
+            .setSmallIcon(R.drawable.baseline_notifications_24)
             .setContentTitle("Boot Counter")
             .setContentText(notificationBody)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -50,15 +60,33 @@ object NotificationUtils {
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
         notificationManager.notify(1, builder.build())
+
+        // Store the flag indicating the notification is active
+        context.dataStore.edit { settings ->
+            settings[NOTIFICATION_ACTIVE_KEY] = true
+        }
+    }
+
+    suspend fun clearNotificationFlag(context: Context) {
+        context.dataStore.edit { settings ->
+            settings[NOTIFICATION_ACTIVE_KEY] = false
+        }
+    }
+
+    fun isNotificationActive(context: Context): Flow<Boolean> {
+        return context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[NOTIFICATION_ACTIVE_KEY] ?: false
+            }
     }
 }
