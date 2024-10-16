@@ -11,7 +11,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class NotificationWorker(val applicationContext: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class NotificationWorker(applicationContext: Context, workerParams: WorkerParameters) : Worker(applicationContext, workerParams) {
 
     override fun doWork(): Result {
         val db = BootDatabase.getDatabase(applicationContext)
@@ -37,7 +37,8 @@ class NotificationWorker(val applicationContext: Context, workerParams: WorkerPa
             }
         }
 
-        NotificationUtils.showNotification(applicationContext, "Boot Event", notificationBody)
+        val notificationBuilder = NotificationUtils.buildNotification(applicationContext, "Boot Event", notificationBody)
+        NotificationUtils.showNotification(applicationContext, 1, notificationBuilder)
         return Result.success()
     }
 }

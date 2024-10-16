@@ -15,6 +15,7 @@ import androidx.work.WorkManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import com.bytebuddies.bootcounter.data.database.BootDatabase
 import com.bytebuddies.bootcounter.data.worker.NotificationWorker
+import com.bytebuddies.bootcounter.data.worker.Scheduler
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -29,7 +30,7 @@ class BootReceiver : BroadcastReceiver() {
             }
 
             val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
-                .setInitialDelay(15, TimeUnit.MINUTES)
+                .setInitialDelay(1, TimeUnit.MINUTES)
                 .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
@@ -37,6 +38,9 @@ class BootReceiver : BroadcastReceiver() {
                 ExistingPeriodicWorkPolicy.REPLACE,
                 workRequest
             )
+
+            // Schedule the repeating task
+            Scheduler.scheduleRepeatingTask(context)
 
             // Optional: Check if a notification was present before reboot and restore it
             // This part can be implemented based on specific requirements

@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name=".BootReceiver"
+            android:name="com.bytebuddies.bootcounter.data.broadcast.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
