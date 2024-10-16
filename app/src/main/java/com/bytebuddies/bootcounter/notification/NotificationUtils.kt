@@ -3,7 +3,9 @@ package com.bytebuddies.bootcounter.notification
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
@@ -48,11 +50,17 @@ object NotificationUtils {
         // Ensure the channel is created before showing the notification
         createNotificationChannel(context)
 
+        val deleteIntent = Intent(context, NotificationDismissedReceiver::class.java)
+        val deletePendingIntent = PendingIntent.getBroadcast(
+            context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.baseline_notifications_24)
             .setContentTitle("Boot Counter")
             .setContentText(notificationBody)
             .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setDeleteIntent(deletePendingIntent)
 
         val notificationManager = NotificationManagerCompat.from(context)
         if (ActivityCompat.checkSelfPermission(
@@ -64,7 +72,6 @@ object NotificationUtils {
         }
         notificationManager.notify(1, builder.build())
 
-        // Store the flag indicating the notification is active
         context.dataStore.edit { settings ->
             settings[NOTIFICATION_ACTIVE_KEY] = true
         }
